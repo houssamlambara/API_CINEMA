@@ -11,8 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('table_film', function (Blueprint $table) {
+        Schema::create('films', function (Blueprint $table) {
             $table->id();
+            $table->string('titre');
+            $table->text('description');
+            $table->string('image')->nullable();
+            $table->integer('duree');
+            $table->integer('age_minimum');
+            $table->string('bande_annonce')->nullable();
+            $table->string('genre');
+            $table->string('acteur');
             $table->timestamps();
         });
     }

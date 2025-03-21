@@ -7,59 +7,32 @@ use Illuminate\Http\Request;
 
 class FilmController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        return response()->json(Film::all());
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $film = Film::create($request->all());
+        return response()->json($film, 201);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Film $film)
+    public function show($id)
     {
-        //
+        return response()->json(Film::findOrFail($id));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Film $film)
+    public function update(Request $request, $id)
     {
-        //
+        $film = Film::findOrFail($id);
+        $film->update($request->all());
+        return response()->json($film);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Film $film)
+    public function destroy($id)
     {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Film $film)
-    {
-        //
+        Film::destroy($id);
+        return response()->json(['message' => 'Film supprimé']);
     }
 }

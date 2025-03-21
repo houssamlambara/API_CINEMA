@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Foundation\Auth\User;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
@@ -24,15 +24,16 @@ class AuthController extends Controller
         $request->validate([
             'name' => 'required|string',
             'email' => 'required|email|unique:users',
-            'password' => 'required|min:3|confirmed'
+            'password' => 'required|min:3'
         ]);
-
+        
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => bcrypt($request->password)
         ]);
-
+       
+    
         Auth::login($user);
 
         $token = $user->creattoken('authToken')->plainTextToken;
@@ -50,8 +51,8 @@ class AuthController extends Controller
         if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
 
             $user = Auth::user();
-            $token = $user->createToken('authToken')->plainTextToken;
-            return response()->json(['token' => 'Email ou mot de passe incorrect'], 401);
+            // $token = $user->createToken('authToken')->plainTextToken;
+            // return response()->json(['token' => 'Email ou mot de passe incorrect'], 401);
         }
         return back()->withErrors(['email' => 'Email ou mot de passe incorrect']);
     }

@@ -8,4 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 class Film extends Model
 {
     use HasFactory;
+
+    protected $fillable = ['titre', 'description', 'image', 'duree', 'age_minimum', 'bande_annonce', 'genre'];
+
+    public function seances()
+    {
+        return $this->hasMany(Seance::class);
+    }
 }
