@@ -2,64 +2,60 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Seance;
+use App\Services\SeanceService;
 use Illuminate\Http\Request;
 
 class SeanceController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    protected $seanceService;
+
+    public function __construct(SeanceService $seanceService)
+    {
+        $this->seanceService = $seanceService;
+    }
+
     public function index()
     {
-        //
+        return response()->json($this->seanceService->getAllSeance());
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function show($id)
     {
-        //
+        return response()->json($this->seanceService->getSeanceById($id));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function register(Request $request)
     {
-        //
+        $data = $request->validate([
+            'film_id' => 'required|exists:films,id',
+            'start_time' => 'required|date',
+            'type' => 'required|string',
+            'langue' => 'required|string',
+            'reservation_id' => 'nullable|exists:reservations,id', // Ensure nullable works as intended
+        ]);
+
+        // Ensure reservation_id is null if not provided
+        $data['reservation_id'] = $data['reservation_id'] ?? null;
+
+        return response()->json($this->seanceService->createSeance($data), 201);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Seance $seance)
+
+    public function update(Request $request, $id)
     {
-        //
+        $data = $request->validate([
+            'film_id' => 'required|exists:films,id',
+            'start_time' => 'required|date',
+            'type' => 'required|string',
+            'langue' => 'required|string',
+            'reservation_id' => 'nullable|exists:reservations,id',
+        ]);
+
+        return response()->json($this->seanceService->updateSeance($id, $data));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Seance $seance)
+    public function destroy($id)
     {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Seance $seance)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Seance $seance)
-    {
-        //
+        return response()->json($this->seanceService->deleteSeance($id));
     }
 }
