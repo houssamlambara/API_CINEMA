@@ -2,6 +2,19 @@
 
 return [
 
+    'guards' => [
+        'web' => [
+            'driver' => 'session',
+            'provider' => 'users',
+        ],
+
+        'api' => [
+            'driver' => 'jwt',  // Utilisation de JWT pour l'authentification API
+            'provider' => 'users',
+            'hash' => false,  // Ce paramètre est nécessaire pour JWT
+        ],
+    ],
+
     /*
     |--------------------------------------------------------------------------
     | Authentication Defaults
@@ -61,14 +74,9 @@ return [
 
     'providers' => [
         'users' => [
-            'driver' => 'eloquent',
-            'model' => App\Models\User::class,
+            'driver' => 'eloquent',  // Utilise Eloquent pour la gestion des utilisateurs
+            'model' => App\Models\User::class,  // Assure-toi que tu utilises le bon modèle pour l'utilisateur
         ],
-
-        // 'users' => [
-        //     'driver' => 'database',
-        //     'table' => 'users',
-        // ],
     ],
 
     /*
