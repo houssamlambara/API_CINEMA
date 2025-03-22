@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\FilmController;
 use App\Repository\Interface\FilmInterface;
+use App\Http\Controllers\SeanceController;
 
 /*
 |--------------------------------------------------------------------------
@@ -27,8 +28,17 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::middleware('auth:api')->group(function () {
   
 });
+
+// FILM
 Route::get('/films', [FilmController::class, 'index']);
 Route::post('/films', [FilmController::class, 'register']);
 Route::get('/films/{id}', [FilmController::class, 'show']);
 Route::put('/films/{id}', [FilmController::class, 'update']);
 Route::delete('/films/{id}', [FilmController::class, 'delete']);
+
+// SEANCE
+Route::get('/seances', [SeanceController::class, 'index']);
+Route::get('/seances/{id}', [SeanceController::class, 'show']);
+Route::post('/seances', [SeanceController::class, 'register']);
+Route::put('/seances/{id}', [SeanceController::class, 'update']);
+Route::delete('/seances/{id}', [SeanceController::class, 'destroy']);
