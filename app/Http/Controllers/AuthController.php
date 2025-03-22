@@ -2,15 +2,21 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\User;
+use Illuminate\Http\Request;
+use App\Services\UserService;
 use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+
+    protected $service;
+
+    public function __construct(UserService $service)
+    {
+        $this->service = $service;
+    }
+
     public function index()
     {
         //
@@ -19,26 +25,15 @@ class AuthController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function register(Request $request)
     {
-        $request->validate([
-            'name' => 'required|string',
+        $data = $request->validate([
+            'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users',
-            'password' => 'required|min:3'
+            'password' => 'required|string|min:3'
         ]);
-        
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => bcrypt($request->password)
-        ]);
-       
-    
-        Auth::login($user);
 
-        $token = $user->creattoken('authToken')->plainTextToken;
-
-        return response()->json(['message' => 'Inscription réussie', 'user' => $user, 'token' => $token], 201);
+        return $this->service->register($data);
     }
 
     public function login(Request $request)
