@@ -44,15 +44,18 @@ class SeanceController extends Controller
     public function update(Request $request, $id)
     {
         $data = $request->validate([
-            'film_id' => 'required|exists:films,id',
-            'start_time' => 'required|date',
-            'type' => 'required|string',
+            'film_id' => 'required|exists:films,id', 
+            'start_time' => 'required|date', 
+            'type' => 'required|string', 
             'langue' => 'required|string',
-            'reservation_id' => 'nullable|exists:reservations,id',
+            'reservation_id' => 'nullable|exists:reservations,id', 
         ]);
+
+        $data['reservation_id'] = $data['reservation_id'] ?? null;
 
         return response()->json($this->seanceService->updateSeance($id, $data));
     }
+
 
     public function destroy($id)
     {
