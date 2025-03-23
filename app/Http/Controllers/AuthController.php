@@ -6,6 +6,8 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use App\Services\UserService;
 use Illuminate\Support\Facades\Auth;
+use Tymon\JWTAuth\Facades\JWTAuth;
+use Tymon\JWTAuth\Exceptions\JWTException;
 
 class AuthController extends Controller
 {
@@ -40,16 +42,19 @@ class AuthController extends Controller
     {
         $request->validate([
             'email' => 'required|email',
-            'password' => 'required|min:3'
+            'password' => 'required|min:3',
         ]);
 
-        if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
-
-            $user = Auth::user();
-            // $token = $user->createToken('authToken')->plainTextToken;
-            // return response()->json(['token' => 'Email ou mot de passe incorrect'], 401);
+        try {
+            // Tente de générer le token JWT
+            if ($token = JWTAuth::attempt(['email' => $request->email, 'password' => $request->password])) {
+                return response()->json(['token' => $token]);
+            } else {
+                return response()->json(['error' => 'Unauthorized'], 401);
+            }
+        } catch (JWTException $e) {
+            return response()->json(['error' => 'Could not create token'], 500);
         }
-        return back()->withErrors(['email' => 'Email ou mot de passe incorrect']);
     }
 
     public function Logout(Request $request)
