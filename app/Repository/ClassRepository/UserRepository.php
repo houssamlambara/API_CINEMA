@@ -3,9 +3,10 @@
 namespace App\Repository\ClassRepository;
 
 use App\Models\User;
-use App\Repository\Interface\UserInterface;
-use Illuminate\Support\Facades\Hash;
 use Tymon\JWTAuth\Facades\JWTAuth;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use App\Repository\Interface\UserInterface;
 
 class UserRepository implements UserInterface
 {
@@ -22,9 +23,12 @@ class UserRepository implements UserInterface
             'password' => Hash::make($data['password']),
         ]);
 
+        // Generate a JWT token for the user
+        $token = Auth::guard('api')->login($user);
+
         return response()->json([
             'message' => 'Utilisateur créé avec succès',
-            'token' => JWTAuth::fromUser($user)
+            'token' => $token
         ], 201);
     }
 
