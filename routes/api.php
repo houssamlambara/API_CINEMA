@@ -4,8 +4,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\FilmController;
-use App\Repository\Interface\FilmInterface;
 use App\Http\Controllers\SeanceController;
+use App\Http\Controllers\ReservationController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -25,9 +26,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
-Route::middleware('auth:api')->group(function () {
-  
-});
+Route::middleware('auth:api')->group(function () {});
 
 // FILM
 Route::get('/films', [FilmController::class, 'index']);
@@ -42,3 +41,9 @@ Route::get('/seances/{id}', [SeanceController::class, 'show']);
 Route::post('/seances', [SeanceController::class, 'register']);
 Route::put('/seances/{id}', [SeanceController::class, 'update']);
 Route::delete('/seances/{id}', [SeanceController::class, 'destroy']);
+
+// RESERVATION
+Route::group(['middleware' => ['auth:api']], function () {
+    Route::post('/reservations', [ReservationController::class, 'store']);
+    Route::patch('/reservations/{reservation}/status', [ReservationController::class, 'updateStatus']);
+});

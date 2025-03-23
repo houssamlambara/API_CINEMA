@@ -106,6 +106,17 @@ return [
             'throttle' => 60,
         ],
     ],
+    'guards' => [
+        'web' => [
+            'driver' => 'session',
+            'provider' => 'users',
+        ],
+
+        'api' => [
+            'driver' => 'jwt',  // Use 'jwt' as the driver for the 'api' guard
+            'provider' => 'users',
+        ],
+    ],
 
     /*
     |--------------------------------------------------------------------------
