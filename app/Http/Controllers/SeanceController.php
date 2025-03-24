@@ -31,31 +31,22 @@ class SeanceController extends Controller
             'start_time' => 'required|date',
             'type' => 'required|string',
             'langue' => 'required|string',
-            'reservation_id' => 'nullable|exists:reservations,id', // Ensure nullable works as intended
         ]);
-
-        // Ensure reservation_id is null if not provided
-        $data['reservation_id'] = $data['reservation_id'] ?? null;
 
         return response()->json($this->seanceService->createSeance($data), 201);
     }
 
-
     public function update(Request $request, $id)
     {
         $data = $request->validate([
-            'film_id' => 'required|exists:films,id', 
-            'start_time' => 'required|date', 
-            'type' => 'required|string', 
+            'film_id' => 'required|exists:films,id',
+            'start_time' => 'required|date',
+            'type' => 'required|string',
             'langue' => 'required|string',
-            'reservation_id' => 'nullable|exists:reservations,id', 
         ]);
-
-        $data['reservation_id'] = $data['reservation_id'] ?? null;
 
         return response()->json($this->seanceService->updateSeance($id, $data));
     }
-
 
     public function destroy($id)
     {

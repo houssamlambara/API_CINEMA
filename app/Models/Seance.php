@@ -10,7 +10,7 @@ class Seance extends Model
     use HasFactory;
 
     protected $table = 'seances';
-    protected $fillable = ['film_id', 'reservation_id', 'start_time', 'type', 'langue'];
+    protected $fillable = ['film_id', 'start_time', 'type', 'langue'];
 
     public function film()
     {
