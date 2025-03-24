@@ -10,7 +10,6 @@ return new class extends Migration {
         Schema::create('seances', function (Blueprint $table) {
             $table->id();
             $table->foreignId('film_id')->constrained()->onDelete('cascade');
-            $table->foreignId('reservation_id')->nullable()->constrained()->onDelete('cascade');
             $table->dateTime('start_time');
             $table->string('type');
             $table->string('langue');
