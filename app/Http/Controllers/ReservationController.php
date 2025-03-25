@@ -6,7 +6,6 @@ use App\Models\Reservation;
 use Illuminate\Http\Request;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use App\Services\ReservationService;
-use Illuminate\Support\Facades\Auth;
 
 
 class ReservationController extends Controller

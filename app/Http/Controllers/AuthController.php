@@ -46,7 +46,7 @@ class AuthController extends Controller
         ]);
 
         try {
-            // Tente de générer le token JWT
+            // générer le token JWT
             if ($token = JWTAuth::attempt(['email' => $request->email, 'password' => $request->password])) {
                 return response()->json(['token' => $token]);
             } else {
@@ -60,7 +60,7 @@ class AuthController extends Controller
     public function logout(Request $request)
     {
         try {
-            auth()->logout(); // Déconnexion de l'utilisateur
+            auth()->logout(); 
             return response()->json(['message' => 'Déconnexion réussie']);
         } catch (Exception $e) {
             return response()->json(['error' => 'Erreur lors de la déconnexion'], 500);
@@ -101,7 +101,7 @@ class AuthController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id) //DELETE
+    public function destroy(string $id) 
     {
         //
     }
