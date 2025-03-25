@@ -15,16 +15,21 @@ class UserService
 
     public function register(array $data)
     {
-            return $this->userRepository->register($data);
-        }
+        return $this->userRepository->register($data);
+    }
 
-        public function login(array $credentials)
-        {
-            return $this->userRepository->login($credentials);
-        }
+    public function login(array $credentials)
+    {
+        return $this->userRepository->login($credentials);
+    }
 
-        public function logout()
-        {
-            return $this->userRepository->logout();
+    public function logout() 
+    {
+        return $this->userRepository->logout();
+    }
+
+    public function updateProfile(array $data)
+    {
+        return $this->userRepository->updateProfile($data);
     }
 }

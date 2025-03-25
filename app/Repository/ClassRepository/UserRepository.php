@@ -43,11 +43,31 @@ class UserRepository implements UserInterface
 
     public function logout()
     {
-        JWTAuth::invalidate(JWTAuth::getToken());
+        auth()->logout();
         return response()->json(['message' => 'Déconnexion réussie']);
     }
-    public function update(array $date)
+
+    public function updateProfile(array $data)
     {
-       
+        // Récupérer l'utilisateur connecté via le token JWT
+        $user = JWTAuth::parseToken()->authenticate();
+
+        if (!$user) {
+            return response()->json(['error' => 'Utilisateur non trouvé'], 404);
+        }
+
+        // Mise à jour uniquement des champs fournis
+        if (!empty($data['name'])) {
+            $user->name = $data['name'];
+        }
+        if (!empty($data['email'])) {
+            $user->email = $data['email'];
+        }
+        if (!empty($data['password'])) {
+            $user->password = bcrypt($data['password']);
+        }
+
+        $user->save();
+        return $user;
     }
 }

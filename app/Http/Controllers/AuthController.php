@@ -57,11 +57,16 @@ class AuthController extends Controller
         }
     }
 
-    public function Logout(Request $request)
+    public function logout(Request $request)
     {
-        Auth::logout();
-        return response()->json(['message' => 'Déconnexion réussie'], 200);
+        try {
+            auth()->logout(); // Déconnexion de l'utilisateur
+            return response()->json(['message' => 'Déconnexion réussie']);
+        } catch (Exception $e) {
+            return response()->json(['error' => 'Erreur lors de la déconnexion'], 500);
+        }
     }
+    
     /**
      * Display the specified resource.
      */
@@ -73,9 +78,24 @@ class AuthController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id) // PUT
+    public function updateProfile(Request $request)
     {
-        //
+        try {
+            $data = $request->validate([
+                'name' => 'nullable|string|max:255',
+                'email' => 'nullable|email|unique:users,email,' . Auth::id(),
+                'password' => 'nullable|string|min:3'
+            ]);
+
+            $user = $this->service->updateProfile($data);
+
+            return response()->json([
+                'message' => 'Profil mis à jour avec succès',
+                'user' => $user
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Erreur lors de la mise à jour du profil'], 500);
+        }
     }
 
     /**
