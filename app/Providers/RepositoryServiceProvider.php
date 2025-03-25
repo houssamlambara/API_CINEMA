@@ -3,12 +3,14 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use App\Repository\Interface\ReservationInterface;
-use App\Repository\ClassRepository\ReservationRepository;
-use App\Repository\Interface\SeanceInterface;
-use App\Repository\ClassRepository\SeanceRepository;
+use App\Repository\Interface\SiegeInterface;
 use App\Repository\Interface\FilmInterface;  
+use App\Repository\Interface\SeanceInterface;
+use App\Repository\Interface\ReservationInterface;
 use App\Repository\ClassRepository\FilmRepository; 
+use App\Repository\ClassRepository\SeanceRepository;
+use App\Repository\ClassRepository\ReservationRepository;
+use App\Repository\ClassRepository\SiegeRepository;
 
 class RepositoryServiceProvider extends ServiceProvider
 {
@@ -22,6 +24,10 @@ class RepositoryServiceProvider extends ServiceProvider
 
         // Lier l'interface ReservationInterface à ReservationRepository
         $this->app->bind(ReservationInterface::class, ReservationRepository::class);
+        
+        // Associe l'interface SiegeInterface à la classe SiegeRepository
+        $this->app->bind(SiegeInterface::class, SiegeRepository::class);
+
     }
 
     public function boot()

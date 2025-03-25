@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\FilmController;
+use App\Http\Controllers\SiegeController;
 use App\Http\Controllers\SeanceController;
 use App\Http\Controllers\ReservationController;
 
@@ -24,12 +25,10 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 // AUTH
-Route::middleware('auth:api')->group(function () {
-    Route::post('/register', [AuthController::class, 'register']);
-    Route::post('/login', [AuthController::class, 'login']);
-    Route::put('/update', [AuthController::class, 'updateProfile']);
-    Route::post('/logout', [AuthController::class, 'logout']);
-});
+Route::middleware('auth:api')->group(function () {});
+Route::post('/register', [AuthController::class, 'register']);
+Route::post('/login', [AuthController::class, 'login']);
+Route::put('/update', [AuthController::class, 'updateProfile']);
 
 // FILM
 Route::get('/films', [FilmController::class, 'index']);
@@ -49,4 +48,13 @@ Route::delete('/seances/{id}', [SeanceController::class, 'destroy']);
 Route::group(['middleware' => ['auth:api']], function () {
     Route::post('/reservations', [ReservationController::class, 'store']);
     Route::patch('/reservations/{reservation}/status', [ReservationController::class, 'updateStatus']);
+});
+
+// SIEGE
+Route::middleware('auth:api')->group(function () {
+    Route::get('/sieges', [SiegeController::class, 'index']);
+    Route::get('/sieges/{id}', [SiegeController::class, 'show']);
+    Route::post('/sieges', [SiegeController::class, 'store']);
+    Route::put('/sieges/{id}', [SiegeController::class, 'update']);
+    Route::delete('/sieges/{id}', [SiegeController::class, 'destroy']);
 });
