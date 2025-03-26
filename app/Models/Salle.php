@@ -2,14 +2,17 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Salle extends Model
 {
-    protected $fillable = ['nom', 'capacite'];
+    use HasFactory;
 
-    public function sieges()
+    protected $fillable = ['nom', 'capacite', 'type'];
+
+    public function seance()
     {
-        return $this->hasMany(Siege::class);
+        return $this->belongsTo(Seance::class, 'seance_id');
     }
 }
