@@ -31,6 +31,7 @@ class SeanceController extends Controller
             'start_time' => 'required|date',
             'type' => 'required|string',
             'langue' => 'required|string',
+            'salle_id' => 'required|exists:salles,id',
         ]);
 
         return response()->json($this->seanceService->createSeance($data), 201);
