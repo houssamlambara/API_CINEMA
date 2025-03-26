@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\FilmController;
+use App\Http\Controllers\SalleController;
 use App\Http\Controllers\SiegeController;
 use App\Http\Controllers\SeanceController;
 use App\Http\Controllers\ReservationController;
@@ -59,3 +60,10 @@ Route::middleware('auth:api')->group(function () {
     Route::put('/sieges/{id}', [SiegeController::class, 'update']);
     Route::delete('/sieges/{id}', [SiegeController::class, 'destroy']);
 });
+
+// SALLE
+Route::get('/salles', [SalleController::class, 'index']);         // Récupérer toutes les salles
+Route::post('/salles', [SalleController::class, 'store']);        // Créer une salle
+Route::get('/salles/{id}', [SalleController::class, 'show']);     // Récupérer une salle par ID
+Route::put('/salles/{id}', [SalleController::class, 'update']);   // Mettre à jour une salle
+Route::delete('/salles/{id}', [SalleController::class, 'destroy']);// Supprimer une salle
