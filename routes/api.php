@@ -62,8 +62,8 @@ Route::middleware('auth:api')->group(function () {
 });
 
 // SALLE
-Route::get('/salles', [SalleController::class, 'index']);         // Récupérer toutes les salles
-Route::post('/salles', [SalleController::class, 'store']);        // Créer une salle
-Route::get('/salles/{id}', [SalleController::class, 'show']);     // Récupérer une salle par ID
-Route::put('/salles/{id}', [SalleController::class, 'update']);   // Mettre à jour une salle
-Route::delete('/salles/{id}', [SalleController::class, 'destroy']);// Supprimer une salle
+Route::get('/salles', [SalleController::class, 'index']);       
+Route::post('/salles', [SalleController::class, 'store']);        
+Route::get('/salles/{id}', [SalleController::class, 'show']);     
+Route::put('salle/{id}', [SalleController::class, 'update']);     
+Route::delete('/salles/{id}', [SalleController::class, 'destroy']);
