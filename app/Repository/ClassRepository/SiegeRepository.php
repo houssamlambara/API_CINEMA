@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Repository\classRepository;
+namespace App\Repository\ClassRepository;
 
 use App\Models\Siege;
 

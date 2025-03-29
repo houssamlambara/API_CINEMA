@@ -7,6 +7,8 @@ use App\Http\Controllers\FilmController;
 use App\Http\Controllers\SalleController;
 use App\Http\Controllers\SiegeController;
 use App\Http\Controllers\SeanceController;
+use App\Http\Controllers\TicketController;
+use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ReservationController;
 
 
@@ -67,3 +69,13 @@ Route::post('/salles', [SalleController::class, 'store']);
 Route::get('/salles/{id}', [SalleController::class, 'show']);     
 Route::put('salle/{id}', [SalleController::class, 'update']);     
 Route::delete('/salles/{id}', [SalleController::class, 'destroy']);
+
+// PAYMENT
+
+Route::post('payment', [PaymentController::class, 'createPayment']);
+Route::get('payment/{paymentId}', [PaymentController::class, 'getPaymentById']);
+Route::get('payments/user/{userId}', [PaymentController::class, 'getPaymentsByUser']);
+
+// TICKET 
+Route::get('/generate-ticket/{paymentId}', [TicketController::class, 'generate']);
+

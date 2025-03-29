@@ -214,4 +214,12 @@ return [
         // 'ExampleClass' => App\Example\ExampleClass::class,
     ])->toArray(),
 
+    'providers' => [
+        Barryvdh\DomPDF\ServiceProvider::class,
+    ],
+    'aliases' => [
+        'File' => Illuminate\Support\Facades\File::class,
+    ],
+
+
 ];
