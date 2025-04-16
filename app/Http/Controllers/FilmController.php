@@ -29,8 +29,8 @@ class FilmController extends Controller
         $data = $request->validate([
             'titre' => 'required|string|max:255',
             'description' => 'required|string',
-            'image' => 'required|string',
-            'duree' => 'required|string',
+            'image' => 'required|file',
+            'duree' => 'required',
             'age_minimum' => 'required|integer',
             'bande_annonce' => 'nullable|string',
             'acteur' => 'required|string',
