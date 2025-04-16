@@ -32,15 +32,13 @@ class FilmController extends Controller
             'image' => 'required|string',
             'duree' => 'required|string',
             'age_minimum' => 'required|integer',
-            'bande_annonce' => 'string',
+            'bande_annonce' => 'nullable|string',
             'acteur' => 'required|string',
             'genre' => 'required|string',
         ]);
 
-
         return response()->json($this->filmService->createFilm($data), 201);
     }
-
 
     public function update(Request $request, $id)
     {
@@ -62,14 +60,13 @@ class FilmController extends Controller
 
 
     public function delete($id)
-{
-    $deleted = $this->filmService->deleteFilm($id);
+    {
+        $deleted = $this->filmService->deleteFilm($id);
 
-    if ($deleted) {
-        return response()->json(['message' => 'Film supprimé avec succès.'], 200);
-    } else {
-        return response()->json(['message' => 'Film introuvable ou déjà supprimé.'], 404);
+        if ($deleted) {
+            return response()->json(['message' => 'Film supprimé avec succès.'], 200);
+        } else {
+            return response()->json(['message' => 'Film introuvable ou déjà supprimé.'], 404);
+        }
     }
-}
-
 }

@@ -20,3 +20,7 @@ Route::get('/register', function () {
 Route::get('/login', function () {
     return view('auth.login');
 });
+
+Route::get('/films', function () {
+    return view('films.film');
+});
