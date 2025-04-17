@@ -7,7 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
-<body class="min-h-screen bg-gray-900 flex items-center justify-center text-white font-sans">
+<body class="min-h-screen bg-gray-900 items-center justify-center text-white font-sans">
     <!-- Navbar -->
     <nav class="bg-gray-900 text-white shadow-lg">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

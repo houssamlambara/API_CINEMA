@@ -63,6 +63,23 @@
         </div>
     </main>
 
+    <!-- Modal pour les séances -->
+    <div id="seancesModal" class="hidden fixed inset-0 bg-black bg-opacity-50 overflow-y-auto h-full w-full">
+        <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-1/2 shadow-lg rounded-md bg-gray-900">
+            <div class="mt-3">
+                <h3 class="text-2xl font-bold text-yellow-400 mb-4" id="modalTitle">Séances disponibles</h3>
+                <div id="seancesContainer" class="mt-2 space-y-4">
+                    <!-- Les séances seront chargées ici -->
+                </div>
+                <div class="mt-4">
+                    <button onclick="closeModal()" class="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700">
+                        Fermer
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Scripts -->
     <script>
         const container = document.getElementById('filmsContainer');
@@ -112,6 +129,10 @@
                                     <span>🎬 ${film.duree || 'Durée inconnue'} min</span>
                                     <span>🔞 ${film.age_minimum || 'N/A'}+</span>
                                 </div>
+                                <button onclick="showSeances(${film.id}, '${film.titre}')" 
+                                        class="w-full bg-yellow-400 text-black py-2 px-4 rounded hover:bg-yellow-500 transition duration-300">
+                                    Voir les séances
+                                </button>
                             </div>
                         `;
                         container.appendChild(card);
@@ -182,6 +203,134 @@
 
         // Charger les films au chargement de la page
         loadFilms();
+
+        async function showSeances(filmId, filmTitle) {
+            try {
+                console.log('Chargement des séances pour le film:', filmId);
+                const response = await fetch(`/api/seances?film_id=${filmId}`, {
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+                
+                console.log('Status de la réponse:', response.status);
+                const rawText = await response.text();
+                console.log('Réponse brute:', rawText);
+                
+                let seances;
+                try {
+                    seances = JSON.parse(rawText);
+                    console.log('Données parsées:', seances);
+                } catch (e) {
+                    console.error('Erreur parsing JSON:', e);
+                    throw new Error('La réponse du serveur n\'est pas un JSON valide');
+                }
+                
+                const modal = document.getElementById('seancesModal');
+                const modalTitle = document.getElementById('modalTitle');
+                const seancesContainer = document.getElementById('seancesContainer');
+                
+                modalTitle.textContent = `Séances pour ${filmTitle}`;
+                seancesContainer.innerHTML = '';
+
+                if (Array.isArray(seances) && seances.length > 0) {
+                    console.log(`Traitement de ${seances.length} séances`);
+                    seances.forEach((seance, index) => {
+                        console.log(`Traitement séance ${index + 1}:`, seance);
+                        
+                        let dateStr = 'Date non disponible';
+                        let timeStr = 'Heure non disponible';
+                        
+                        try {
+                            if (seance.start_time) {
+                                console.log('Date originale:', seance.start_time);
+                                const date = new Date(seance.start_time);
+                                dateStr = date.toLocaleDateString('fr-FR', {
+                                    weekday: 'long',
+                                    year: 'numeric',
+                                    month: 'long',
+                                    day: 'numeric'
+                                });
+                                timeStr = date.toLocaleTimeString('fr-FR', {
+                                    hour: '2-digit',
+                                    minute: '2-digit'
+                                });
+                            }
+                        } catch (e) {
+                            console.error('Erreur formatage date:', e, seance.start_time);
+                        }
+
+                        const seanceElement = document.createElement('div');
+                        seanceElement.className = 'bg-gray-800 p-4 rounded-lg mb-4';
+                        seanceElement.innerHTML = `
+                            <div class="flex flex-col md:flex-row justify-between items-start md:items-center space-y-4 md:space-y-0">
+                                <div class="flex-grow">
+                                    <p class="text-yellow-400 text-lg font-semibold">${dateStr}</p>
+                                    <p class="text-gray-300">${timeStr}</p>
+                                    <p class="text-gray-400">Type: ${seance.type || 'Non spécifié'}</p>
+                                    <p class="text-gray-400">Langue: ${seance.langue || 'Non spécifiée'}</p>
+                                    <p class="text-gray-400">Salle: ${seance.salle ? seance.salle.numero : 'Non spécifiée'}</p>
+                                    <p class="text-gray-400">Places disponibles: ${seance.places_disponibles ?? 'Non spécifié'}</p>
+                                </div>
+                                <div class="flex flex-col space-y-2 w-full md:w-auto">
+                                    <button onclick="reserverSeance(${seance.id})" 
+                                            class="bg-yellow-400 text-black px-6 py-2 rounded hover:bg-yellow-500 transition duration-300 w-full md:w-auto text-center">
+                                        Réserver
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                        seancesContainer.appendChild(seanceElement);
+                    });
+                } else {
+                    console.log('Aucune séance trouvée');
+                    seancesContainer.innerHTML = `
+                        <div class="text-center text-gray-400 p-4">
+                            <p class="text-xl mb-2">Aucune séance disponible pour ce film.</p>
+                            <p class="text-sm">(Données reçues: ${JSON.stringify(seances)})</p>
+                        </div>
+                    `;
+                }
+
+                modal.classList.remove('hidden');
+            } catch (error) {
+                console.error('Erreur détaillée:', error);
+                alert('Une erreur est survenue lors du chargement des séances: ' + error.message);
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('seancesModal').classList.add('hidden');
+        }
+
+        async function reserverSeance(seanceId) {
+            try {
+                const response = await fetch('/api/reservations', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    },
+                    body: JSON.stringify({
+                        seance_id: seanceId
+                    })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.message || 'Erreur lors de la réservation');
+                }
+
+                alert('Réservation effectuée avec succès !');
+                closeModal();
+                
+            } catch (error) {
+                console.error('Erreur:', error);
+                alert('Erreur lors de la réservation: ' + error.message);
+            }
+        }
     </script>
 </body>
 
