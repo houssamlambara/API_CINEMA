@@ -29,3 +29,4 @@ Route::get('/reservation', function () {
     return view('reservations.reservation');
 });
 
+g

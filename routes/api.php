@@ -44,6 +44,7 @@ Route::delete('/films/{id}', [FilmController::class, 'delete']);
 // SEANCE
 Route::get('/seances', [SeanceController::class, 'index']);
 Route::get('/seances/{id}', [SeanceController::class, 'show']);
+Route::get('/seances/{id}/sieges', [SeanceController::class, 'getSieges']);
 Route::post('/seances', [SeanceController::class, 'register']);
 Route::put('/seances/{id}', [SeanceController::class, 'update']);
 Route::delete('/seances/{id}', [SeanceController::class, 'destroy']);

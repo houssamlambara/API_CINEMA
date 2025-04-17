@@ -21,9 +21,9 @@
 
                 <!-- Liens -->
                 <div class="hidden md:flex space-x-6 items-center">
-                    <a href="#" class="hover:text-yellow-400 transition duration-300">Accueil</a>
-                    <a href="#" class="hover:text-yellow-400 transition duration-300">Films</a>
-                    <a href="#" class="hover:text-yellow-400 transition duration-300">Séances</a>
+                    <a href="../index.html" class="hover:text-yellow-400 transition duration-300">Accueil</a>
+                    <a href="../films/film.blade.php" class="hover:text-yellow-400 transition duration-300">Films</a>
+                    <a href="../seances/seance.blade.php" class="hover:text-yellow-400 transition duration-300">Séances</a>
                     <a href="#" class="hover:text-yellow-400 transition duration-300">Contact</a>
                 </div>
 
@@ -96,8 +96,8 @@
                     responseDiv.innerHTML = `✅ Connexion réussie !`;
                     localStorage.setItem('token', result.token);
 
-                    // Redirection vers une page sécurisée
-                    // window.location.href = '/dashboard.html';
+                    // Redirection vers la page des films
+                    window.location.href = '/films';
                 } else {
                     responseDiv.className = 'mt-4 text-center text-sm text-red-400';
                     responseDiv.innerHTML = `❌ ${result.error || 'Identifiants incorrects.'}`;

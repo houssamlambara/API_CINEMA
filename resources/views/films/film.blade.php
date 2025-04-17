@@ -80,6 +80,56 @@
         </div>
     </div>
 
+    <!-- Modal pour les sièges -->
+    <div id="siegeModal" class="hidden fixed inset-0 bg-black bg-opacity-50 overflow-y-auto h-full w-full z-50">
+        <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-1/2 shadow-lg rounded-md bg-gray-900">
+            <div class="mt-3">
+                <h3 class="text-2xl font-bold text-yellow-400 mb-4">Sélection des sièges</h3>
+                
+                <!-- Écran -->
+                <div class="w-full h-8 bg-gray-700 rounded-lg mb-8 text-center text-sm text-gray-400 flex items-center justify-center">
+                    ÉCRAN
+                </div>
+
+                <!-- Légende -->
+                <div class="flex justify-center gap-4 mb-6">
+                    <div class="flex items-center">
+                        <div class="w-6 h-6 bg-gray-600 rounded mr-2"></div>
+                        <span class="text-sm">Disponible</span>
+                    </div>
+                    <div class="flex items-center">
+                        <div class="w-6 h-6 bg-yellow-400 rounded mr-2"></div>
+                        <span class="text-sm">Sélectionné</span>
+                    </div>
+                    <div class="flex items-center">
+                        <div class="w-6 h-6 bg-red-500 rounded mr-2"></div>
+                        <span class="text-sm">Occupé</span>
+                    </div>
+                </div>
+
+                <!-- Grille des sièges -->
+                <div id="siegeGrid" class="grid grid-cols-8 gap-2 mb-6">
+                    <!-- Les sièges seront générés ici -->
+                </div>
+
+                <!-- Informations de la réservation -->
+                <div class="mb-6">
+                    <p class="text-gray-300">Sièges sélectionnés: <span id="selectedSeats" class="text-yellow-400">0</span></p>
+                    <p class="text-gray-300">Total: <span id="totalPrice" class="text-yellow-400">0</span> €</p>
+                </div>
+
+                <div class="flex justify-end space-x-4">
+                    <button onclick="confirmerReservation()" class="bg-yellow-400 text-black px-4 py-2 rounded hover:bg-yellow-500 transition duration-300">
+                        Confirmer
+                    </button>
+                    <button onclick="closeSiegeModal()" class="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700">
+                        Annuler
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Scripts -->
     <script>
         const container = document.getElementById('filmsContainer');
@@ -102,12 +152,30 @@
             }
         });
 
-        // Charger les films existants
+        // Au début du script, après document.addEventListener('DOMContentLoaded'...
+        document.addEventListener('DOMContentLoaded', function() {
+            // Vérifier l'authentification au chargement de la page
+            const token = localStorage.getItem('token');
+            if (!token) {
+                window.location.href = '/login';
+                return;
+            }
+
+            // Charger les films
+            loadFilms();
+        });
+
         async function loadFilms() {
             try {
-                const response = await fetch('/api/films');
+                const token = localStorage.getItem('token');
+                const response = await fetch('/api/films', {
+                    headers: {
+                        'Accept': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
                 const films = await response.json();
-
+                const container = document.getElementById('filmsContainer');
                 container.innerHTML = '';
 
                 if (Array.isArray(films) && films.length > 0) {
@@ -141,8 +209,16 @@
                     container.innerHTML = '<p class="text-center text-gray-400">Aucun film disponible pour le moment.</p>';
                 }
             } catch (error) {
-                container.innerHTML = '<p class="text-red-500 text-center">Une erreur est survenue lors du chargement des films.</p>';
                 console.error('Erreur:', error);
+                if (error.message.includes('Unauthorized')) {
+                    window.location.href = '/login';
+                    return;
+                }
+                container.innerHTML = `
+                    <div class="col-span-full text-center text-red-500">
+                        Une erreur est survenue lors du chargement des films.
+                    </div>
+                `;
             }
         }
 
@@ -200,9 +276,6 @@
                 console.error('Erreur complète:', error);
             }
         });
-
-        // Charger les films au chargement de la page
-        loadFilms();
 
         async function showSeances(filmId, filmTitle) {
             try {
@@ -303,17 +376,117 @@
             document.getElementById('seancesModal').classList.add('hidden');
         }
 
-        async function reserverSeance(seanceId) {
+        let selectedSeats = new Set();
+        let currentSeanceId = null;
+        let seatsData = null;
+        const PRICE_PER_SEAT = 9.99;
+
+        function showSiegeModal(seanceId) {
+            currentSeanceId = seanceId;
+            const modal = document.getElementById('siegeModal');
+            const grid = document.getElementById('siegeGrid');
+            grid.innerHTML = '';
+
+            // Simuler le chargement des sièges depuis l'API
+            loadSeatsForSeance(seanceId);
+
+            modal.classList.remove('hidden');
+        }
+
+        async function loadSeatsForSeance(seanceId) {
             try {
+                const token = localStorage.getItem('token');
+                const response = await fetch(`/api/seances/${seanceId}/sieges`, {
+                    headers: {
+                        'Accept': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Erreur lors du chargement des sièges');
+                }
+
+                const data = await response.json();
+                seatsData = data;
+                renderSeats(data);
+            } catch (error) {
+                console.error('Erreur:', error);
+                alert('Impossible de charger les sièges. Veuillez réessayer.');
+            }
+        }
+
+        function renderSeats(seats) {
+            const grid = document.getElementById('siegeGrid');
+            grid.innerHTML = '';
+
+            // Générer 32 sièges (4 rangées de 8)
+            for (let i = 0; i < 32; i++) {
+                const row = Math.floor(i / 8) + 1;
+                const seat = (i % 8) + 1;
+                const seatNumber = `${String.fromCharCode(64 + row)}${seat}`;
+
+                const seatElement = document.createElement('div');
+                seatElement.className = `
+                    w-8 h-8 rounded cursor-pointer flex items-center justify-center text-sm
+                    ${seats?.[i]?.is_occupied ? 'bg-red-500 cursor-not-allowed' : 'bg-gray-600 hover:bg-gray-500'}
+                `;
+                seatElement.textContent = seatNumber;
+                seatElement.dataset.seatId = i + 1;
+
+                if (!seats?.[i]?.is_occupied) {
+                    seatElement.onclick = () => toggleSeat(seatElement, i + 1);
+                }
+
+                grid.appendChild(seatElement);
+            }
+        }
+
+        function toggleSeat(element, seatId) {
+            if (selectedSeats.has(seatId)) {
+                selectedSeats.delete(seatId);
+                element.classList.remove('bg-yellow-400');
+                element.classList.add('bg-gray-600');
+            } else {
+                selectedSeats.add(seatId);
+                element.classList.remove('bg-gray-600');
+                element.classList.add('bg-yellow-400');
+            }
+
+            updateReservationInfo();
+        }
+
+        function updateReservationInfo() {
+            document.getElementById('selectedSeats').textContent = selectedSeats.size;
+            document.getElementById('totalPrice').textContent = (selectedSeats.size * PRICE_PER_SEAT).toFixed(2);
+        }
+
+        function closeSiegeModal() {
+            document.getElementById('siegeModal').classList.add('hidden');
+            selectedSeats.clear();
+            updateReservationInfo();
+        }
+
+        async function confirmerReservation() {
+            if (selectedSeats.size === 0) {
+                alert('Veuillez sélectionner au moins un siège.');
+                return;
+            }
+
+            try {
+                const token = localStorage.getItem('token');
                 const response = await fetch('/api/reservations', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'Accept': 'application/json',
+                        'Authorization': `Bearer ${token}`,
                         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
                     },
                     body: JSON.stringify({
-                        seance_id: seanceId
+                        seance_id: currentSeanceId,
+                        siege_ids: Array.from(selectedSeats),
+                        status: 'En Attente'
                     })
                 });
 
@@ -323,13 +496,38 @@
                     throw new Error(data.message || 'Erreur lors de la réservation');
                 }
 
-                alert('Réservation effectuée avec succès !');
+                // Afficher le message de succès
+                const successModal = document.createElement('div');
+                successModal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+                successModal.innerHTML = `
+                    <div class="bg-gray-900 p-8 rounded-lg shadow-xl max-w-md w-full mx-4">
+                        <h3 class="text-xl font-bold text-yellow-400 mb-4">Réservation réussie !</h3>
+                        <p class="text-gray-300 mb-6">Votre réservation a été enregistrée avec succès. Vous pouvez consulter vos réservations dans votre espace personnel.</p>
+                        <div class="flex justify-end space-x-4">
+                            <button onclick="window.location.href='/reservation'" class="bg-yellow-400 text-black px-4 py-2 rounded hover:bg-yellow-500 transition duration-300">
+                                Voir mes réservations
+                            </button>
+                            <button onclick="this.parentElement.parentElement.parentElement.remove()" class="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700 transition duration-300">
+                                Fermer
+                            </button>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(successModal);
+
+                // Fermer les modals
+                closeSiegeModal();
                 closeModal();
-                
+
             } catch (error) {
                 console.error('Erreur:', error);
                 alert('Erreur lors de la réservation: ' + error.message);
             }
+        }
+
+        // Mettre à jour la fonction reserverSeance pour utiliser le modal de sièges
+        function reserverSeance(seanceId) {
+            showSiegeModal(seanceId);
         }
     </script>
 </body>
