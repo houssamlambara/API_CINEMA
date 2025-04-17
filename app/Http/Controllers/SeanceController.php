@@ -40,10 +40,11 @@ class SeanceController extends Controller
     public function update(Request $request, $id)
     {
         $data = $request->validate([
-            'film_id' => 'required|exists:films,id',
-            'start_time' => 'required|date',
-            'type' => 'required|string',
-            'langue' => 'required|string',
+            'film_id' => 'nullable|exists:films,id',
+            'start_time' => 'nullable|date',
+            'type' => 'nullable|string',
+            'langue' => 'nullable|string',
+            'salle_id' => 'nullable|exists:salles,id',
         ]);
 
         return response()->json($this->seanceService->updateSeance($id, $data));

@@ -24,3 +24,8 @@ Route::get('/login', function () {
 Route::get('/films', function () {
     return view('films.film');
 });
+
+Route::get('/reservation', function () {
+    return view('reservations.reservation');
+});
+
