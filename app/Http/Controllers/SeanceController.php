@@ -5,10 +5,31 @@ namespace App\Http\Controllers;
 use App\Services\SeanceService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use App\Models\Seance;
 
 class SeanceController extends Controller
 {
     protected $seanceService;
+
+    public function store(Request $request)
+    {
+        // Validation des données
+        $validated = $request->validate([
+            'film' => 'required|string|max:255',
+            'date' => 'required|date',
+            'time' => 'required|date_format:H:i',
+        ]);
+
+        // Création de la séance
+        Seance::create([
+            'film' => $validated['film'],
+            'date' => $validated['date'],
+            'time' => $validated['time'],
+        ]);
+
+        // Redirection avec un message de succès
+        return redirect('/seances/create')->with('success', 'Séance ajoutée avec succès !');
+    }
 
     public function __construct(SeanceService $seanceService)
     {
@@ -60,14 +81,14 @@ class SeanceController extends Controller
     {
         try {
             $seance = $this->seanceService->getSeanceById($id);
-            
+
             if (!$seance) {
                 return response()->json(['error' => 'Séance non trouvée'], 404);
             }
 
             $salle = $seance->salle;
             Log::info('Salle trouvée:', ['salle_id' => $salle->id ?? null]);
-            
+
             if (!$salle) {
                 return response()->json(['error' => 'Salle non trouvée'], 404);
             }
@@ -110,7 +131,6 @@ class SeanceController extends Controller
             });
 
             return response()->json($siegesFormates);
-            
         } catch (\Exception $e) {
             Log::error('Erreur lors du chargement des sièges: ' . $e->getMessage());
             Log::error('Stack trace: ' . $e->getTraceAsString());

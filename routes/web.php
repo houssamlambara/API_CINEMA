@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\SeanceController;
 
 /*
 |--------------------------------------------------------------------------
@@ -29,4 +30,8 @@ Route::get('/reservation', function () {
     return view('reservations.reservation');
 });
 
-g
+Route::get('/seances/create', function () {
+    return view('seances.create');
+});
+Route::get('/seances', [SeanceController::class, 'index']);
+Route::post('/seances', [SeanceController::class, 'store']);
